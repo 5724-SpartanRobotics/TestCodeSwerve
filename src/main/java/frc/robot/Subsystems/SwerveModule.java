@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import javax.print.CancelablePrintJob;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -17,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
 import org.opencv.core.Mat;
 
-public class SwerveModule extends PIDSubsystem {
+public class SwerveModule {
 
     // Offset
     private double offset = 0 ;
@@ -54,11 +55,10 @@ public class SwerveModule extends PIDSubsystem {
 
     private double canCoderModified = 0;
 
+    private PIDController turnPID;
+
     // Takes ID's of swerve components when called.
     public SwerveModule(int turnMotor, int driveMotor, int canID, double off) {
-
-        // Use constants here when not lazy
-        super(new PIDController(0.1, 0.05, 0));
 
         // Set the offset
         offset = off;
@@ -67,6 +67,7 @@ public class SwerveModule extends PIDSubsystem {
         turn = new WPI_TalonFX(turnMotor);
         drive = new WPI_TalonFX(driveMotor);
         canCoder = new CANCoder(canID);
+        turn.set(ControlMode.MotionMagic, 0);
 
         // cancoder settings.
         config = new CANCoderConfiguration();
@@ -78,6 +79,9 @@ public class SwerveModule extends PIDSubsystem {
 
     // Run this in periodic for all swerves. It just keeps stuff up to speed.
     public void update()  {
+        // Check for loop around
+        loopAround = (Math.abs(canCoder.getAbsolutePosition() - requestedAngle) > (3 * Math.PI / 2)); 
+
         // Cancoder variable to help with loop around.
         canCoderModified = canCoder.getAbsolutePosition();
         canCoderModified -= offset;
@@ -92,6 +96,7 @@ public class SwerveModule extends PIDSubsystem {
                 requestedAngle -= 2 * Math.PI;
             }
         }
+        
 
         // If the wheel is facing the other direction, invert speed
         if(Math.abs(canCoderModified - requestedAngle) > Math.PI / 2) {
@@ -111,8 +116,12 @@ public class SwerveModule extends PIDSubsystem {
             dif = 0.0001;
         }
 
+        turn.set(ControlMode.Position, (requestedAngle + offset) / (Math.PI / 4) * 4096 * 150 / 7);
+
+        // turn.set(ControlMode.Position, SmartDashboard.getNumber("turn", 0));
+
         // Set the turn
-        turn.set(maxturn * dif / Math.abs(dif) / (1 + Math.pow(Math.E, (m * Math.abs(dif) + b))));
+        // turn.set(maxturn * dif / Math.abs(dif) / (1 + Math.pow(Math.E, (m * Math.abs(dif) + b))));
     }
 
     // Takes x, y vector on desired robot direction
@@ -123,10 +132,6 @@ public class SwerveModule extends PIDSubsystem {
 
         // Set the speed
         driveSpeed = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-
-        // Check for loop around
-        loopAround = (Math.abs(canCoder.getAbsolutePosition() - requestedAngle) > 3 * Math.PI / 2);
-
         
     }
 
@@ -138,19 +143,5 @@ public class SwerveModule extends PIDSubsystem {
         // Set the speed
         driveSpeed = spe;
 
-        // Check for loop around
-        loopAround = (Math.abs(canCoder.getAbsolutePosition() - requestedAngle) > 3 * Math.PI / 2); 
-    }
-
-    @Override
-    protected void useOutput(double output, double setpoint) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    protected double getMeasurement() {
-        // TODO Auto-generated method stub
-        return 0;
     }
 }

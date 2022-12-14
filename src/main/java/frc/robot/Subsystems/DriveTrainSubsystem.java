@@ -40,10 +40,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
         double yturn = turnvel * 1.4 / 2;
 
         // TODO Auto-generated method stub
-        LF.setCartesian(xvel + xturn, yvel + yturn);
-        RF.setCartesian(xvel + yturn, yvel - xturn);
-        LB.setCartesian(xvel - yturn, yvel + xturn);
-        RB.setCartesian(xvel - xturn, yvel - yturn);
+        RF.setCartesian(xvel + xturn, yvel + yturn);
+        RB.setCartesian(xvel + yturn, yvel - xturn);
+        LF.setCartesian(xvel - yturn, yvel + xturn);
+        LB.setCartesian(xvel - xturn, yvel - yturn);
         super.periodic();
 
         LF.update();
@@ -63,6 +63,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
         // Go back to cartesian
         xvel = Math.cos(ang) * speed;
         yvel = Math.sin(ang) * speed;
-        turnvel = turn * 0;
+        turnvel = turn * 0.5;
     }
 }
