@@ -41,8 +41,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
         // TODO Auto-generated method stub
         RF.setCartesian(xvel + xturn, yvel + yturn);
-        RB.setCartesian(xvel + yturn, yvel - xturn);
-        LF.setCartesian(xvel - yturn, yvel + xturn);
+        RB.setCartesian(xvel - yturn, yvel + xturn);
+        LF.setCartesian(xvel + yturn, yvel - xturn);
         LB.setCartesian(xvel - xturn, yvel - yturn);
         super.periodic();
 

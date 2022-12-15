@@ -7,8 +7,8 @@ public class Constant {
         public static final int LFDriveMotor = 18;
         public static final int LFCanID = 61;
         public static final double RFOff = 1.71;
-        public static final int RFTurnMotor = 5;
-        public static final int RFDriveMotor = 21;
+        public static final int RFTurnMotor = 21;
+        public static final int RFDriveMotor = 5;
         public static final int RFCanID = 62;
         public static final double LBOff = 5.04;
         public static final int LBTurnMotor = 6;

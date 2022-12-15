@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import javax.print.CancelablePrintJob;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -56,18 +58,27 @@ public class SwerveModule {
     private double canCoderModified = 0;
 
     private PIDController turnPID;
+    private int turnID = 0;
 
     // Takes ID's of swerve components when called.
     public SwerveModule(int turnMotor, int driveMotor, int canID, double off) {
 
         // Set the offset
         offset = off;
+        turnID = turnMotor;
 
         // IDs for cancoder and falcons.
         turn = new WPI_TalonFX(turnMotor);
         drive = new WPI_TalonFX(driveMotor);
         canCoder = new CANCoder(canID);
-        turn.set(ControlMode.MotionMagic, 0);
+        turn.configFactoryDefault();
+        turn.setNeutralMode(NeutralMode.Brake);
+        turn.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 0);
+        turn.config_kP(0, 0.1);
+        turn.config_kI(0, 0);
+        turn.config_kD(0, 0);
+        turn.configForwardSoftLimitEnable(false);
+        turn.set(ControlMode.Position, 0);
 
         // cancoder settings.
         config = new CANCoderConfiguration();
@@ -79,49 +90,50 @@ public class SwerveModule {
 
     // Run this in periodic for all swerves. It just keeps stuff up to speed.
     public void update()  {
-        // Check for loop around
-        loopAround = (Math.abs(canCoder.getAbsolutePosition() - requestedAngle) > (3 * Math.PI / 2)); 
+        // // Check for loop around
+        // loopAround = (Math.abs(canCoder.getAbsolutePosition() - requestedAngle) > (3 * Math.PI / 2)); 
 
-        // Cancoder variable to help with loop around.
-        canCoderModified = canCoder.getAbsolutePosition();
-        canCoderModified -= offset;
-        if(canCoderModified < 0) {
-            canCoderModified += 2 * Math.PI;
-        }
-        if(loopAround) {
-            if(canCoderModified > Math.PI) {
-                canCoderModified -= 2 * Math.PI;
-            }
-            if(requestedAngle > Math.PI) {
-                requestedAngle -= 2 * Math.PI;
-            }
-        }
+        // // Cancoder variable to help with loop around.
+        // canCoderModified = canCoder.getAbsolutePosition();
+        // canCoderModified -= offset;
+        // if(canCoderModified < 0) {
+        //     canCoderModified += 2 * Math.PI;
+        // }
+        // if(loopAround) {
+        //     if(canCoderModified > Math.PI) {
+        //         canCoderModified -= 2 * Math.PI;
+        //     }
+        //     if(requestedAngle > Math.PI) {
+        //         requestedAngle -= 2 * Math.PI;
+        //     }
+        // }
         
 
         // If the wheel is facing the other direction, invert speed
-        if(Math.abs(canCoderModified - requestedAngle) > Math.PI / 2) {
-            isInverted = -1;
-        } else {
-            isInverted = 1;
-        }
+        // if(Math.abs(canCoderModified - requestedAngle) > Math.PI / 2) {
+        //     isInverted = -1;
+        // } else {
+        //     isInverted = 1;
+        // }
 
         // Set the speed
         drive.set(maxdrive * isInverted * driveSpeed);
 
-        // Calculate dif
-        dif = canCoderModified - requestedAngle;
+        // // Calculate dif
+        // dif = canCoderModified - requestedAngle;
 
-        // Protect against 0/0
-        if(dif == 0) {
-            dif = 0.0001;
-        }
+        // // Protect against 0/0
+        // if(dif == 0) {
+        //     dif = 0.0001;
+        // }
+        // turn.set(ControlMode.Position, (requestedAngle) / (Math.PI * 4) * 4096 * 150 / 7);
 
-        turn.set(ControlMode.Position, (requestedAngle + offset) / (Math.PI / 4) * 4096 * 150 / 7);
-
-        // turn.set(ControlMode.Position, SmartDashboard.getNumber("turn", 0));
+        turn.set(ControlMode.Position, SmartDashboard.getNumber("turn", 0));
 
         // Set the turn
         // turn.set(maxturn * dif / Math.abs(dif) / (1 + Math.pow(Math.E, (m * Math.abs(dif) + b))));
+        System.out.println(turnID);
+        System.out.println((requestedAngle) / (Math.PI * 4) * 4096 * 150 / 7);
     }
 
     // Takes x, y vector on desired robot direction
