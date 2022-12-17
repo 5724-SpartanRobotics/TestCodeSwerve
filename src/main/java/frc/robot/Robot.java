@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,6 +17,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix.sensors.CANCoderSimCollection;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 
 import org.opencv.core.Mat;
@@ -46,14 +48,11 @@ public class Robot extends TimedRobot {
 
   private Joystick drivestick = new Joystick(0);
 
-  private CANCoder LF = new CANCoder(61);
-  private CANCoder LB = new CANCoder(60);
-  private CANCoder RT = new CANCoder(62);
-  private CANCoder RB = new CANCoder(59);
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
+  
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
@@ -77,11 +76,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("59",  RB.getAbsolutePosition());
-    SmartDashboard.putNumber("60", LB.getAbsolutePosition());
-    SmartDashboard.putNumber("61", LF.getAbsolutePosition());
-    SmartDashboard.putNumber("62", RT.getAbsolutePosition());
-  }
+      // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
+    // commands, running already-scheduled commands, removing finished or interrupted commands,
+    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // block in order for anything in the Command-based framework to work.
+    CommandScheduler.getInstance().run();
+}
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -117,13 +117,12 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    
+    SmartDashboard.putNumber("turn", 0);
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    drive.periodic();
     // Turn.set(SmartDashboard.getNumber("turn", 0));
     double ang = SmartDashboard.getNumber("turn", 0);
     double dri = SmartDashboard.getNumber("drive", 0);
@@ -151,9 +150,12 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+    drive.simulationInit();
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 }

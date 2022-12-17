@@ -5,6 +5,7 @@ import frc.robot.Subsystems.SwerveModule;
 import frc.robot.Subsystems.Constant.DriveConstants;
 import java.util.*;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
 
 public class DriveTrainSubsystem extends SubsystemBase {
     
@@ -16,6 +17,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     // Gyro for now
     private ADIS16448_IMU gyro = new ADIS16448_IMU();
+    private ADIS16448_IMUSim gyroSim = new ADIS16448_IMUSim(gyro);
 
     // Commands for swerve motion
     private double xvel = 0;
@@ -27,10 +29,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
     private double L = 0.71;
 
     public DriveTrainSubsystem() {
-        LF = new SwerveModule(DriveConstants.LFTurnMotor, DriveConstants.LFDriveMotor, DriveConstants.LFCanID, DriveConstants.LFOff);
-        RF = new SwerveModule(DriveConstants.RFTurnMotor, DriveConstants.RFDriveMotor, DriveConstants.RFCanID, DriveConstants.RFOff);
-        LB = new SwerveModule(DriveConstants.LBTurnMotor, DriveConstants.LBDriveMotor, DriveConstants.LBCanID, DriveConstants.LBOff);
-        RB = new SwerveModule(DriveConstants.RBTurnMotor, DriveConstants.RBDriveMotor, DriveConstants.RBCanID, DriveConstants.RBOff);
+        LF = new SwerveModule(DriveConstants.LFTurnMotor, DriveConstants.LFDriveMotor, DriveConstants.LFCanID, DriveConstants.LFOff, "LF");
+        RF = new SwerveModule(DriveConstants.RFTurnMotor, DriveConstants.RFDriveMotor, DriveConstants.RFCanID, DriveConstants.RFOff, "RF");
+        LB = new SwerveModule(DriveConstants.LBTurnMotor, DriveConstants.LBDriveMotor, DriveConstants.LBCanID, DriveConstants.LBOff, "LB");
+        RB = new SwerveModule(DriveConstants.RBTurnMotor, DriveConstants.RBDriveMotor, DriveConstants.RBCanID, DriveConstants.RBOff, "RB");
     }
 
     @Override
@@ -44,12 +46,28 @@ public class DriveTrainSubsystem extends SubsystemBase {
         RB.setCartesian(xvel - yturn, yvel + xturn);
         LF.setCartesian(xvel + yturn, yvel - xturn);
         LB.setCartesian(xvel - xturn, yvel - yturn);
-        super.periodic();
-
+    
         LF.update();
         RF.update();
         LB.update();
         RB.update();
+    }
+
+    public void simulationInit()
+    {
+        LF.simulateInit();
+        RF.simulateInit();
+        LB.simulateInit();
+        RB.simulateInit();
+        gyroSim.setGyroAngleY(10);
+    }
+    @Override
+    public void simulationPeriodic()
+    {
+        LF.simulate();
+        RF.simulate();
+        LB.simulate();
+        RB.simulate();
     }
 
     public void driveCommand(double x, double y, double turn) {

@@ -2,6 +2,7 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,12 +12,15 @@ import javax.print.CancelablePrintJob;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix.sensors.CANCoderSimCollection;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.opencv.core.Mat;
 
@@ -30,6 +34,10 @@ public class SwerveModule {
     private WPI_TalonFX drive;
     private CANCoder canCoder;
     private CANCoderConfiguration config;
+    //simulation objects
+    private CANCoderSimCollection canCoderSim;
+    private TalonFXSimCollection turnSim;
+    private TalonFXSimCollection driveSim;
 
     // Constants for angle setting of swerve
     private double m = -5;
@@ -59,10 +67,12 @@ public class SwerveModule {
 
     private PIDController turnPID;
     private int turnID = 0;
+    public String Name;
+    private String canCoderName;
 
     // Takes ID's of swerve components when called.
-    public SwerveModule(int turnMotor, int driveMotor, int canID, double off) {
-
+    public SwerveModule(int turnMotor, int driveMotor, int canCoderID, double off, String name) {
+        Name = name;
         // Set the offset
         offset = off;
         turnID = turnMotor;
@@ -70,7 +80,8 @@ public class SwerveModule {
         // IDs for cancoder and falcons.
         turn = new WPI_TalonFX(turnMotor);
         drive = new WPI_TalonFX(driveMotor);
-        canCoder = new CANCoder(canID);
+        canCoder = new CANCoder(canCoderID);
+        canCoderName = name + canCoderID;
         turn.configFactoryDefault();
         turn.setNeutralMode(NeutralMode.Brake);
         turn.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 0);
@@ -127,10 +138,12 @@ public class SwerveModule {
         //     dif = 0.0001;
         // }
         // turn.set(ControlMode.Position, (requestedAngle) / (Math.PI * 4) * 4096 * 150 / 7);
-
-        turn.set(ControlMode.Position, SmartDashboard.getNumber("turn", 0));
-
-        // Set the turn
+        double dashboardTurnSetpoint = SmartDashboard.getNumber("turn", 0);
+        turn.set(ControlMode.Position, dashboardTurnSetpoint);
+        SmartDashboard.putNumber("turn", dashboardTurnSetpoint);
+        SmartDashboard.putNumber("Pos FB " + Name, turn.getSelectedSensorPosition());
+        SmartDashboard.putNumber(canCoderName,  canCoder.getAbsolutePosition());
+              // Set the turn
         // turn.set(maxturn * dif / Math.abs(dif) / (1 + Math.pow(Math.E, (m * Math.abs(dif) + b))));
         System.out.println(turnID);
         System.out.println((requestedAngle) / (Math.PI * 4) * 4096 * 150 / 7);
@@ -156,4 +169,21 @@ public class SwerveModule {
         driveSpeed = spe;
 
     }
-}
+
+    public void simulateInit()
+    {
+        canCoderSim = new CANCoderSimCollection(canCoder);
+        turnSim = new TalonFXSimCollection(turn);
+        driveSim = new TalonFXSimCollection(drive);
+    }
+
+    public void simulate()
+    {
+        double battryVoltage = RobotController.getBatteryVoltage();
+        canCoderSim.setBusVoltage(battryVoltage);
+        canCoderSim.setRawPosition((int)turn.getSelectedSensorPosition());
+
+        turnSim.setBusVoltage(battryVoltage);
+        driveSim.setBusVoltage(battryVoltage);
+    }
+  }
