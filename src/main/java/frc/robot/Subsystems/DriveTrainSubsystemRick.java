@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems.Constant.DriveConstants;
 
@@ -42,12 +43,17 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
 
         public Rotation2d getGyroHeading(){
-            return lastUpdatedGyroHeading;
+            return new Rotation2d(); //lastUpdatedGyroHeading;
         }
 
         @Override
         public void periodic(){
             //the gyro getGyroAngleY returns positive values as the robot turns clockwise. We want negative for clockwise
+            LF.periodic();
+            LB.periodic();
+            RF.periodic();
+            RB.periodic();
+            SmartDashboard.putNumber("Gyro Heading Deg", getGyroHeading().getDegrees());
             UpdateGyro();
             robotPose = swerveDriveOdometry.update(getGyroHeading(), LF.getState(), RF.getState(), LB.getState(), RB.getState());
         }
@@ -57,7 +63,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
 
         public void drive(Translation2d translation, double rotation){
-            SwerveModuleState[] swerveModStates = DriveConstants.swerveKenematics.toSwerveModuleStates(
+            SwerveModuleState[] swerveModStates = swerveDriveKinematics.toSwerveModuleStates(
                 ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, getGyroHeading()));
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModStates, DriveConstants.maxRobotSpeedmps);
             LF.setDesiredState(swerveModStates[0]);

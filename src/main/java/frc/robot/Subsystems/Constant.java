@@ -6,7 +6,7 @@ import edu.wpi.first.math.util.Units;
 
 public class Constant {
     public static final class DriveConstants {
-        public static final double LFOff = 1.48;//CANCoder offset in radians
+        public static final double LFOff = 1.52;//CANCoder offset in radians
         public static final int LFTurnMotor = 7;
         public static final int LFDriveMotor = 18;
         public static final int LFCanID = 61;
@@ -36,7 +36,6 @@ public class Constant {
         public static Translation2d RFLocation = new Translation2d(-trackWidth/2, wheelBase/2);
         public static Translation2d LBLocation = new Translation2d(trackWidth/2, -wheelBase/2);
         public static Translation2d RBLocation = new Translation2d(-trackWidth/2, -wheelBase/2);
-        public static SwerveDriveKinematics swerveKenematics = new SwerveDriveKinematics(LFLocation, RFLocation, LBLocation, RBLocation);
         public static double turnGearRatio = 150.0 / 7.0;
         /**Maximum angular velocity in radians per second */
         public static double maxAngularVelocityRps = Units.degreesToRadians(10.0);//radians per second max rotation

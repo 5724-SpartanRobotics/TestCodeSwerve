@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  // private DriveTrainSubsystem drive;
+  //private DriveTrainSubsystem drive;
   private DriveTrainSubsystemRick drive;
 
   private double dif = 0;
@@ -69,10 +69,10 @@ public class Robot extends TimedRobot {
     //if using rick's subsystem uncoment these
     drive = new DriveTrainSubsystemRick();
     drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
-    // drive = new DriveTrainSubsystem();
-    // drive.setDefaultCommand(new RunCommand(() -> {
+    //  drive = new DriveTrainSubsystem();
+    //  drive.setDefaultCommand(new RunCommand(() -> {
       
-    // }, drive));
+    //  }, drive));
   }
 
   /**

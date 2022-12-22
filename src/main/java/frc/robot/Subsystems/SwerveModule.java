@@ -153,8 +153,6 @@ public class SwerveModule {
         double dashboardTurnSetpoint = SmartDashboard.getNumber("turn", 0);
         turn.set(ControlMode.Position, dashboardTurnSetpoint);
         SmartDashboard.putNumber("turn", dashboardTurnSetpoint);
-        SmartDashboard.putNumber("Pos FB " + Name, turn.getSelectedSensorPosition());
-        SmartDashboard.putNumber(canCoderName,  canCoder.getAbsolutePosition());
               // Set the turn
         // turn.set(maxturn * dif / Math.abs(dif) / (1 + Math.pow(Math.E, (m * Math.abs(dif) + b))));
         System.out.println(turnID);
@@ -184,6 +182,7 @@ public class SwerveModule {
 
     private void resetTurnToAbsolute(){
         double absPosition = Conversions.radiansToFalcon(Units.degreesToRadians(driveTrainParent.getGyroHeading().getDegrees()) - offset);
+        SmartDashboard.putNumber(Name + "Posn abs", absPosition);
         turn.setSelectedSensorPosition(absPosition);
     }
 
@@ -221,5 +220,10 @@ public class SwerveModule {
         SmartDashboard.putNumber(Name + " TurnRef", desiredState.angle.getDegrees());
         turn.set(ControlMode.Position, Conversions.radiansToFalcon(angle));
         driveAngle = angle;
+    }
+
+    public void periodic(){
+        SmartDashboard.putNumber("Pos FB " + Name, Units.radiansToDegrees(Conversions.falconToRadians(turn.getSelectedSensorPosition())));
+        SmartDashboard.putNumber(canCoderName,  Units.radiansToDegrees(canCoder.getAbsolutePosition()));
     }
   }

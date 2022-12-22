@@ -96,8 +96,9 @@ public class DriveTrainSubsystem extends SubsystemBase implements DriveTrainInte
     }
 
     public Rotation2d getGyroHeading(){
+        return new Rotation2d();
         //the gyro getGyroAngleY returns positive values as the robot turns clockwise. We want negative for clockwise
-        return Rotation2d.fromDegrees(-gyro.getGyroAngleY());
+//        return Rotation2d.fromDegrees(-gyro.getGyroAngleY());
     }
 
 }

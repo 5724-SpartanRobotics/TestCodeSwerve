@@ -11,7 +11,7 @@ public class Conversions {
      * @return The radians for the specified counts.
      */
     public static double falconToRadians(double counts){
-        return counts * (twoPi / DriveConstants.turnGearRatio * 2048.0);
+        return counts * (twoPi / (DriveConstants.turnGearRatio * 2048.0));
     }
 
     /**
