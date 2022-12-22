@@ -27,7 +27,6 @@ public class TeleopSwerve extends CommandBase {
             SmartDashboard.putNumber("JoyStickY", 0.0);
             SmartDashboard.putNumber("JoyStickX", 0.0);
             SmartDashboard.putNumber("JoyStickZ", 0.0);
-            
         }
  }
 
@@ -42,7 +41,6 @@ public class TeleopSwerve extends CommandBase {
             yAxis = SmartDashboard.getNumber("JoyStickY", 0.0);
             xAxis = SmartDashboard.getNumber("JoyStickX", 0.0);
             zAxis = SmartDashboard.getNumber("JoyStickZ", 0.0);
-            
         }
         yAxis = (Math.abs(yAxis) < ControllerConstants.joystickDeadband) ? 0 : yAxis;
         xAxis = (Math.abs(xAxis) < ControllerConstants.joystickDeadband) ? 0 : xAxis;

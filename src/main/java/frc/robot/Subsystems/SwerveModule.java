@@ -218,9 +218,8 @@ public class SwerveModule {
 
         //if desired speed is less than 1 percent, keep the angle where it was to prevent jittering
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DriveConstants.maxRobotSpeedmps * 0.01)) ? driveAngle : desiredState.angle.getRadians();
-        double counts = Conversions.radiansToFalcon(angle);
-        SmartDashboard.putNumber(Name + " TurnRef", counts);
-        turn.set(ControlMode.Position, counts);
+        SmartDashboard.putNumber(Name + " TurnRef", desiredState.angle.getDegrees());
+        turn.set(ControlMode.Position, Conversions.radiansToFalcon(angle));
         driveAngle = angle;
     }
   }
