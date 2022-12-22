@@ -1,8 +1,12 @@
 package frc.robot.Subsystems;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
+
 public class Constant {
     public static final class DriveConstants {
-        public static final double LFOff = 1.48;
+        public static final double LFOff = 1.48;//CANCoder offset in radians
         public static final int LFTurnMotor = 7;
         public static final int LFDriveMotor = 18;
         public static final int LFCanID = 61;
@@ -18,5 +22,26 @@ public class Constant {
         public static final int RBTurnMotor = 3;
         public static final int RBDriveMotor = 2;
         public static final int RBCanID = 59;
-    } 
+        public static final double trackWidth = Units.inchesToMeters(30.0);//wheel center to center width
+        public static final double wheelBase = Units.inchesToMeters(30.0);//wheel center to center front / back distance
+        public static final double wheelDiameter = Units.inchesToMeters(4.125);//guessing there is about 1/8" added for the tread. The wheel diameter is 4"
+        public static final double wheelCircumfrence = wheelDiameter * Math.PI;//meters
+        public static final double driveGearRatio = 6.75;
+        public static final double maxMotorRpm = 6380;
+        public static final double maxWheelRpm = maxMotorRpm / driveGearRatio;
+        public static final double maxRobotSpeedmps = maxWheelRpm / 60 * wheelCircumfrence;//should be 5.1853 mps
+        //Swerve locations relative to the center of the robot. positive x values represent moving toward
+        // the left of the robot, positive y represent moving toward the front of the robot. Distances are in meters.
+        public static Translation2d LFLocation = new Translation2d(trackWidth/2, wheelBase/2);
+        public static Translation2d RFLocation = new Translation2d(-trackWidth/2, wheelBase/2);
+        public static Translation2d LBLocation = new Translation2d(trackWidth/2, -wheelBase/2);
+        public static Translation2d RBLocation = new Translation2d(-trackWidth/2, -wheelBase/2);
+        public static SwerveDriveKinematics swerveKenematics = new SwerveDriveKinematics(LFLocation, RFLocation, LBLocation, RBLocation);
+        public static double turnGearRatio = 150.0 / 7.0;
+        /**Maximum angular velocity in radians per second */
+        public static double maxAngularVelocityRps = Units.degreesToRadians(10.0);//radians per second max rotation
+    }
+    public static final class ControllerConstants{
+        public static double joystickDeadband = 0.05;//a deadband that you must overcome for the joystick input, otherwise we send 0
+    }
 }

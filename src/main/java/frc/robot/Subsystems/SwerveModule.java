@@ -1,6 +1,9 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -21,6 +24,9 @@ import com.ctre.phoenix.sensors.CANCoderSimCollection;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Subsystems.Constant.DriveConstants;
+import frc.robot.Util.CTREModuleState;
+import frc.robot.Util.Conversions;
 
 import org.opencv.core.Mat;
 
@@ -39,6 +45,10 @@ public class SwerveModule {
     private TalonFXSimCollection turnSim;
     private TalonFXSimCollection driveSim;
 
+    private DriveTrainInterface driveTrainParent;
+
+    private SwerveModuleState state;
+
     // Constants for angle setting of swerve
     private double m = -5;
     private double b = 4;
@@ -46,7 +56,7 @@ public class SwerveModule {
     private double dif = 0;
 
     // Desired speed and angle values for swerve
-    private double driveSpeed = 0;
+    private double driveSpeed = 0;//1 = max speed.
     private double driveAngle = 0;
 
     // Limit for maximum drive speed
@@ -71,11 +81,12 @@ public class SwerveModule {
     private String canCoderName;
 
     // Takes ID's of swerve components when called.
-    public SwerveModule(int turnMotor, int driveMotor, int canCoderID, double off, String name) {
+    public SwerveModule(int turnMotor, int driveMotor, int canCoderID, double off, String name, DriveTrainInterface driveTr) {
         Name = name;
         // Set the offset
         offset = off;
         turnID = turnMotor;
+        driveTrainParent = driveTr;
 
         // IDs for cancoder and falcons.
         turn = new WPI_TalonFX(turnMotor);
@@ -89,6 +100,7 @@ public class SwerveModule {
         turn.config_kI(0, 0);
         turn.config_kD(0, 0);
         turn.configForwardSoftLimitEnable(false);
+        resetTurnToAbsolute();
         turn.set(ControlMode.Position, 0);
 
         // cancoder settings.
@@ -170,6 +182,11 @@ public class SwerveModule {
 
     }
 
+    private void resetTurnToAbsolute(){
+        double absPosition = Conversions.radiansToFalcon(Units.degreesToRadians(driveTrainParent.getGyroHeading().getDegrees()) - offset);
+        turn.setSelectedSensorPosition(absPosition);
+    }
+
     public void simulateInit()
     {
         canCoderSim = new CANCoderSimCollection(canCoder);
@@ -185,5 +202,25 @@ public class SwerveModule {
 
         turnSim.setBusVoltage(battryVoltage);
         driveSim.setBusVoltage(battryVoltage);
+    }
+
+    //Gets the current state of the robot based on the specified gyro angle and the last speed setpoint
+    public SwerveModuleState getState(){
+        double spdMps = driveSpeed * DriveConstants.maxRobotSpeedmps;
+        return new SwerveModuleState(spdMps, driveTrainParent.getGyroHeading());
+    }
+
+    public void setDesiredState(SwerveModuleState desiredState){
+        desiredState = CTREModuleState.optimize(desiredState, getState().angle);
+        double percentOutput = desiredState.speedMetersPerSecond / DriveConstants.maxRobotSpeedmps;
+        SmartDashboard.putNumber(Name + " DriveRef", percentOutput);
+        drive.set(ControlMode.PercentOutput, percentOutput);
+
+        //if desired speed is less than 1 percent, keep the angle where it was to prevent jittering
+        double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DriveConstants.maxRobotSpeedmps * 0.01)) ? driveAngle : desiredState.angle.getRadians();
+        double counts = Conversions.radiansToFalcon(angle);
+        SmartDashboard.putNumber(Name + " TurnRef", counts);
+        turn.set(ControlMode.Position, counts);
+        driveAngle = angle;
     }
   }

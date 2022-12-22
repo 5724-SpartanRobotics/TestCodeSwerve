@@ -22,7 +22,10 @@ import com.ctre.phoenix.sensors.SensorTimeBase;
 
 import org.opencv.core.Mat;
 
+import frc.robot.Subsystems.DriveTrainInterface;
 import frc.robot.Subsystems.DriveTrainSubsystem;
+import frc.robot.Subsystems.DriveTrainSubsystemRick;
+import frc.robot.commands.TeleopSwerve;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -38,7 +41,8 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private DriveTrainSubsystem drive = new DriveTrainSubsystem();
+  // private DriveTrainSubsystem drive;
+  private DriveTrainSubsystemRick drive;
 
   private double dif = 0;
   // Constants for angle setting of swerve
@@ -62,9 +66,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("turn", 0);
     SmartDashboard.putNumber("setpos", 0);
     
-    drive.setDefaultCommand(new RunCommand(() -> {
+    //if using rick's subsystem uncoment these
+    drive = new DriveTrainSubsystemRick();
+    drive.setDefaultCommand(new TeleopSwerve(drive, drivestick));
+    // drive = new DriveTrainSubsystem();
+    // drive.setDefaultCommand(new RunCommand(() -> {
       
-    }, drive));
+    // }, drive));
   }
 
   /**
@@ -126,7 +134,7 @@ public class Robot extends TimedRobot {
     // Turn.set(SmartDashboard.getNumber("turn", 0));
     double ang = SmartDashboard.getNumber("turn", 0);
     double dri = SmartDashboard.getNumber("drive", 0);
-    drive.driveCommand(drivestick.getX(), -drivestick.getY(), drivestick.getZ());
+  //  drive.driveCommand(drivestick.getX(), -drivestick.getY(), drivestick.getZ());
 
   }
 

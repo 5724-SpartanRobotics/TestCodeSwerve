@@ -4,10 +4,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems.SwerveModule;
 import frc.robot.Subsystems.Constant.DriveConstants;
 import java.util.*;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
 
-public class DriveTrainSubsystem extends SubsystemBase {
+public class DriveTrainSubsystem extends SubsystemBase implements DriveTrainInterface {
     
     // Swerve modules
     private SwerveModule LF;
@@ -16,8 +19,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
     private SwerveModule RB;
 
     // Gyro for now
-    private ADIS16448_IMU gyro = new ADIS16448_IMU();
-    private ADIS16448_IMUSim gyroSim = new ADIS16448_IMUSim(gyro);
+    private ADIS16448_IMU gyro;
+    private ADIS16448_IMUSim gyroSim;
 
     // Commands for swerve motion
     private double xvel = 0;
@@ -29,11 +32,12 @@ public class DriveTrainSubsystem extends SubsystemBase {
     private double L = 0.71;
 
     public DriveTrainSubsystem() {
-        LF = new SwerveModule(DriveConstants.LFTurnMotor, DriveConstants.LFDriveMotor, DriveConstants.LFCanID, DriveConstants.LFOff, "LF");
-        RF = new SwerveModule(DriveConstants.RFTurnMotor, DriveConstants.RFDriveMotor, DriveConstants.RFCanID, DriveConstants.RFOff, "RF");
-        LB = new SwerveModule(DriveConstants.LBTurnMotor, DriveConstants.LBDriveMotor, DriveConstants.LBCanID, DriveConstants.LBOff, "LB");
-        RB = new SwerveModule(DriveConstants.RBTurnMotor, DriveConstants.RBDriveMotor, DriveConstants.RBCanID, DriveConstants.RBOff, "RB");
-    }
+        LF = new SwerveModule(DriveConstants.LFTurnMotor, DriveConstants.LFDriveMotor, DriveConstants.LFCanID, DriveConstants.LFOff, "LF", this);
+        RF = new SwerveModule(DriveConstants.RFTurnMotor, DriveConstants.RFDriveMotor, DriveConstants.RFCanID, DriveConstants.RFOff, "RF", this);
+        LB = new SwerveModule(DriveConstants.LBTurnMotor, DriveConstants.LBDriveMotor, DriveConstants.LBCanID, DriveConstants.LBOff, "LB", this);
+        RB = new SwerveModule(DriveConstants.RBTurnMotor, DriveConstants.RBDriveMotor, DriveConstants.RBCanID, DriveConstants.RBOff, "RB", this);
+        gyro = new ADIS16448_IMU();
+}
 
     @Override
     public void periodic() {
@@ -53,8 +57,13 @@ public class DriveTrainSubsystem extends SubsystemBase {
         RB.update();
     }
 
+    public void drive(Translation2d translation, double rotation){
+        
+    }
+
     public void simulationInit()
     {
+        gyroSim = new ADIS16448_IMUSim(gyro);
         LF.simulateInit();
         RF.simulateInit();
         LB.simulateInit();
@@ -64,6 +73,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
     @Override
     public void simulationPeriodic()
     {
+        if (gyroSim == null)
+            simulationInit();
         LF.simulate();
         RF.simulate();
         LB.simulate();
@@ -83,4 +94,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
         yvel = Math.sin(ang) * speed;
         turnvel = turn * 0.5;
     }
+
+    public Rotation2d getGyroHeading(){
+        //the gyro getGyroAngleY returns positive values as the robot turns clockwise. We want negative for clockwise
+        return Rotation2d.fromDegrees(-gyro.getGyroAngleY());
+    }
+
 }
