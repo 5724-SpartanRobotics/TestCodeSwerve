@@ -36,18 +36,18 @@ public class TeleopSwerve extends CommandBase {
         double xAxis = controller.getX();
         double zAxis = controller.getZ();
 
-        if (TimedRobot.isSimulation())
-        {
-            yAxis = SmartDashboard.getNumber("JoyStickY", 0.0);
-            xAxis = SmartDashboard.getNumber("JoyStickX", 0.0);
-            zAxis = SmartDashboard.getNumber("JoyStickZ", 0.0);
-        }
+        // if (TimedRobot.isSimulation())
+        // {
+        //     yAxis = SmartDashboard.getNumber("JoyStickY", 0.0);
+        //     xAxis = SmartDashboard.getNumber("JoyStickX", 0.0);
+        //     zAxis = SmartDashboard.getNumber("JoyStickZ", 0.0);
+        // }
         yAxis = (Math.abs(yAxis) < ControllerConstants.joystickDeadband) ? 0 : yAxis;
         xAxis = (Math.abs(xAxis) < ControllerConstants.joystickDeadband) ? 0 : xAxis;
         zAxis = (Math.abs(zAxis) < ControllerConstants.joystickDeadband) ? 0 : zAxis;
 
         double rotation = zAxis * DriveConstants.maxAngularVelocityRps;
-        Translation2d translation = new Translation2d(xAxis, yAxis).times(DriveConstants.maxRobotSpeedmps);
+        Translation2d translation = new Translation2d(yAxis, xAxis).times(DriveConstants.maxRobotSpeedmps);
         swerveDrive.drive(translation, rotation);
     }
 }

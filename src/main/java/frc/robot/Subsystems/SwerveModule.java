@@ -193,13 +193,14 @@ public class SwerveModule {
         driveSim = new TalonFXSimCollection(drive);
     }
 
-    public void simulate()
+    public void simulatePeriodic()
     {
         double battryVoltage = RobotController.getBatteryVoltage();
         canCoderSim.setBusVoltage(battryVoltage);
         canCoderSim.setRawPosition((int)turn.getSelectedSensorPosition());
 
         turnSim.setBusVoltage(battryVoltage);
+        turnSim.setIntegratedSensorRawPosition((int)Conversions.radiansToFalcon(driveAngle));
         driveSim.setBusVoltage(battryVoltage);
     }
 

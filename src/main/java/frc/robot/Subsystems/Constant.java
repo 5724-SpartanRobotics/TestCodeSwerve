@@ -30,12 +30,12 @@ public class Constant {
         public static final double maxMotorRpm = 6380;
         public static final double maxWheelRpm = maxMotorRpm / driveGearRatio;
         public static final double maxRobotSpeedmps = maxWheelRpm / 60 * wheelCircumfrence;//should be 5.1853 mps
-        //Swerve locations relative to the center of the robot. positive x values represent moving toward
-        // the left of the robot, positive y represent moving toward the front of the robot. Distances are in meters.
-        public static Translation2d LFLocation = new Translation2d(trackWidth/2, wheelBase/2);
-        public static Translation2d RFLocation = new Translation2d(-trackWidth/2, wheelBase/2);
-        public static Translation2d LBLocation = new Translation2d(trackWidth/2, -wheelBase/2);
-        public static Translation2d RBLocation = new Translation2d(-trackWidth/2, -wheelBase/2);
+        //Swerve locations relative to the center of the robot. Positive x values represent moving toward the front of the robot whereas positive y values
+        // represent moving toward the left of the robot. Distances are in meters.
+        public static Translation2d LFLocation = new Translation2d(wheelBase/2, trackWidth/2);
+        public static Translation2d RFLocation = new Translation2d(wheelBase/2, -trackWidth/2);
+        public static Translation2d LBLocation = new Translation2d(-wheelBase/2, trackWidth/2);
+        public static Translation2d RBLocation = new Translation2d(-wheelBase/2, -trackWidth/2);
         public static double turnGearRatio = 150.0 / 7.0;
         /**Maximum angular velocity in radians per second */
         public static double maxAngularVelocityRps = Units.degreesToRadians(10.0);//radians per second max rotation

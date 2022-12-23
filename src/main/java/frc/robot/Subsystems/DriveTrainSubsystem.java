@@ -75,10 +75,10 @@ public class DriveTrainSubsystem extends SubsystemBase implements DriveTrainInte
     {
         if (gyroSim == null)
             simulationInit();
-        LF.simulate();
-        RF.simulate();
-        LB.simulate();
-        RB.simulate();
+        LF.simulatePeriodic();
+        RF.simulatePeriodic();
+        LB.simulatePeriodic();
+        RB.simulatePeriodic();
     }
 
     public void driveCommand(double x, double y, double turn) {

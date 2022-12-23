@@ -79,12 +79,16 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             RF.simulateInit();
             LB.simulateInit();
             RB.simulateInit();
-            gyroSim.setGyroAngleY(10);
+            gyroSim.setGyroAngleY(0);
         }
         @Override
         public void simulationPeriodic(){
             if (gyroSim == null)
                 simulationInit();
-            gyroSim.setGyroAngleY(Units.radiansToDegrees(1.0));
-        }
+            gyroSim.setGyroAngleY(Units.radiansToDegrees(0.0));
+            LF.simulatePeriodic();
+            RF.simulatePeriodic();
+            LB.simulatePeriodic();
+            RB.simulatePeriodic();
+            }
 }
