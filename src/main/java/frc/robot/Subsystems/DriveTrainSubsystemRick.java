@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Subsystems.Constant.DebugLevel;
+import frc.robot.Subsystems.Constant.DebugSetting;
 import frc.robot.Subsystems.Constant.DriveConstants;
 
 public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrainInterface {
@@ -53,7 +55,9 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
             LB.periodic();
             RF.periodic();
             RB.periodic();
-            SmartDashboard.putNumber("Gyro Heading Deg", getGyroHeading().getDegrees());
+            if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+                SmartDashboard.putNumber("Gyro Heading Deg", getGyroHeading().getDegrees());
+            }
             UpdateGyro();
             robotPose = swerveDriveOdometry.update(getGyroHeading(), LF.getState(), RF.getState(), LB.getState(), RB.getState());
         }

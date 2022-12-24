@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -62,9 +64,12 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
     SmartDashboard.putNumber("drive", 0);
     SmartDashboard.putNumber("turn", 0);
     SmartDashboard.putNumber("setpos", 0);
+
+
     
     //if using rick's subsystem uncoment these
     drive = new DriveTrainSubsystemRick();

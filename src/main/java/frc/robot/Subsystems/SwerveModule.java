@@ -24,6 +24,8 @@ import com.ctre.phoenix.sensors.CANCoderSimCollection;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Subsystems.Constant.DebugLevel;
+import frc.robot.Subsystems.Constant.DebugSetting;
 import frc.robot.Subsystems.Constant.DriveConstants;
 import frc.robot.Util.CTREModuleState;
 import frc.robot.Util.Conversions;
@@ -182,7 +184,9 @@ public class SwerveModule {
 
     private void resetTurnToAbsolute(){
         double absPosition = Conversions.radiansToFalcon(Units.degreesToRadians(driveTrainParent.getGyroHeading().getDegrees()) - offset);
-        SmartDashboard.putNumber(Name + "Posn abs", absPosition);
+        if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+            SmartDashboard.putNumber(Name + "Posn abs", absPosition);
+        }
         turn.setSelectedSensorPosition(absPosition);
     }
 
@@ -213,18 +217,24 @@ public class SwerveModule {
     public void setDesiredState(SwerveModuleState desiredState){
         desiredState = CTREModuleState.optimize(desiredState, getState().angle);
         double percentOutput = desiredState.speedMetersPerSecond / DriveConstants.maxRobotSpeedmps;
-        SmartDashboard.putNumber(Name + " DriveRef", percentOutput);
+        if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+            SmartDashboard.putNumber(Name + " DriveRef", percentOutput);
+        }
         drive.set(ControlMode.PercentOutput, percentOutput);
 
         //if desired speed is less than 1 percent, keep the angle where it was to prevent jittering
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DriveConstants.maxRobotSpeedmps * 0.01)) ? driveAngle : desiredState.angle.getRadians();
-        SmartDashboard.putNumber(Name + " TurnRef", desiredState.angle.getDegrees());
+        if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+            SmartDashboard.putNumber(Name + " TurnRef", desiredState.angle.getDegrees());
+        }
         turn.set(ControlMode.Position, Conversions.radiansToFalcon(angle));
         driveAngle = angle;
     }
 
     public void periodic(){
-        SmartDashboard.putNumber("Pos FB " + Name, Units.radiansToDegrees(Conversions.falconToRadians(turn.getSelectedSensorPosition())));
-        SmartDashboard.putNumber(canCoderName,  Units.radiansToDegrees(canCoder.getAbsolutePosition()));
+        if (DebugSetting.TraceLevel == DebugLevel.Verbose){
+            SmartDashboard.putNumber("Pos FB " + Name, Units.radiansToDegrees(Conversions.falconToRadians(turn.getSelectedSensorPosition())));
+            SmartDashboard.putNumber(canCoderName,  Units.radiansToDegrees(canCoder.getAbsolutePosition()));
+        }
     }
   }
