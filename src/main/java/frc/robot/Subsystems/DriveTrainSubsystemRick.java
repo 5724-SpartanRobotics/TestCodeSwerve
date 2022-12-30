@@ -45,7 +45,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
 
         public Rotation2d getGyroHeading(){
-            return new Rotation2d(); //lastUpdatedGyroHeading;
+            return lastUpdatedGyroHeading;
         }
 
         @Override
