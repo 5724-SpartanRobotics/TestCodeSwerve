@@ -183,11 +183,13 @@ public class SwerveModule {
     }
 
     private void resetTurnToAbsolute(){
-        double absPosition = Conversions.radiansToFalcon(Units.degreesToRadians(driveTrainParent.getGyroHeading().getDegrees()) - offset);
+        //get the absolute encoder position and subtract the starting offset, to be used to reset the encoder so it knows where we are
+        double absPosition = Conversions.radiansToFalcon(canCoder.getAbsolutePosition() - offset);
         if (DebugSetting.TraceLevel == DebugLevel.Verbose){
             SmartDashboard.putNumber(Name + "Posn abs", absPosition);
         }
-        turn.setSelectedSensorPosition(absPosition);
+        //negate the position. The cancoder increases while the motor encoder decreases
+        turn.setSelectedSensorPosition(-absPosition);
     }
 
     public void simulateInit()
@@ -234,7 +236,7 @@ public class SwerveModule {
     public void periodic(){
         if (DebugSetting.TraceLevel == DebugLevel.Verbose){
             SmartDashboard.putNumber("Pos FB " + Name, Units.radiansToDegrees(Conversions.falconToRadians(turn.getSelectedSensorPosition())));
-            SmartDashboard.putNumber(canCoderName,  Units.radiansToDegrees(canCoder.getAbsolutePosition()));
+            SmartDashboard.putNumber(canCoderName,  Units.radiansToDegrees(canCoder.getAbsolutePosition() - offset));
         }
     }
   }
