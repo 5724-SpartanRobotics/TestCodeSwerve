@@ -37,8 +37,8 @@ public class Constant {
         public static Translation2d LBLocation = new Translation2d(-wheelBase/2, trackWidth/2);
         public static Translation2d RBLocation = new Translation2d(-wheelBase/2, -trackWidth/2);
         public static double turnGearRatio = 150.0 / 7.0;
-        /**Maximum angular velocity in radians per second */
-        public static double maxAngularVelocityRps = Units.degreesToRadians(10.0);//radians per second max rotation
+        /**Maximum angular velocity in degrees per second */
+        public static double maxAngularVelocityRps = 10.0;
     }
     public static final class ControllerConstants{
         public static double joystickDeadband = 0.05;//a deadband that you must overcome for the joystick input, otherwise we send 0

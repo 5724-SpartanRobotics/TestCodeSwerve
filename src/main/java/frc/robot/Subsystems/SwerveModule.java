@@ -206,28 +206,30 @@ public class SwerveModule {
         canCoderSim.setRawPosition((int)turn.getSelectedSensorPosition());
 
         turnSim.setBusVoltage(battryVoltage);
-        turnSim.setIntegratedSensorRawPosition((int)Conversions.radiansToFalcon(driveAngle));
+        turnSim.setIntegratedSensorRawPosition((int)Conversions.degreesToFalcon(driveAngle));
         driveSim.setBusVoltage(battryVoltage);
+        driveSim.setIntegratedSensorVelocity((int)(driveSpeed * 2048 / 600));
     }
 
     //Gets the current state of the robot based on the specified gyro angle and the last speed setpoint
     public SwerveModuleState getState(){
-        double spdMps = driveSpeed * DriveConstants.maxRobotSpeedmps;
-        return new SwerveModuleState(spdMps, driveTrainParent.getGyroHeading());
+        double velocity = Conversions.falconToMPS(drive.getSelectedSensorVelocity());
+        Rotation2d angle = Rotation2d.fromDegrees(Conversions.falconToDegrees(turn.getSelectedSensorPosition()));
+        return new SwerveModuleState(velocity, angle);
     }
 
     public void setDesiredState(SwerveModuleState desiredState){
         desiredState = CTREModuleState.optimize(desiredState, getState().angle);
-        double percentOutput = desiredState.speedMetersPerSecond / DriveConstants.maxRobotSpeedmps;
+        driveSpeed = desiredState.speedMetersPerSecond / DriveConstants.maxRobotSpeedmps;
         if (DebugSetting.TraceLevel == DebugLevel.Verbose){
-            SmartDashboard.putNumber(Name + " DriveRef", percentOutput);
+            SmartDashboard.putNumber(Name + " DriveRef", driveSpeed);
         }
-        drive.set(ControlMode.PercentOutput, percentOutput);
+        drive.set(ControlMode.PercentOutput, driveSpeed);
 
         //if desired speed is less than 1 percent, keep the angle where it was to prevent jittering
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DriveConstants.maxRobotSpeedmps * 0.01)) ? driveAngle : desiredState.angle.getRadians();
         if (DebugSetting.TraceLevel == DebugLevel.Verbose){
-            SmartDashboard.putNumber(Name + " TurnRef", angle);
+            SmartDashboard.putNumber(Name + " TurnRef", Units.radiansToDegrees(angle));
         }
         turn.set(ControlMode.Position, Conversions.radiansToFalcon(angle));
         driveAngle = angle;
