@@ -9,7 +9,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
+import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsystems.Constant.DebugLevel;
@@ -25,15 +27,18 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         private Rotation2d lastUpdatedGyroHeading;
     
         // Gyro for now
-        private ADIS16448_IMU gyro;
-        private ADIS16448_IMUSim gyroSim;
+        // private ADIS16448_IMU gyro;
+        // private ADIS16448_IMUSim gyroSim;
+        private ADXRS450_Gyro gyro;
+        private ADXRS450_GyroSim gyroSim;
 
         private SwerveDriveKinematics swerveDriveKinematics;
         private SwerveDriveOdometry swerveDriveOdometry;
         private Pose2d robotPose;
     
         public DriveTrainSubsystemRick() {
-            gyro = new ADIS16448_IMU();
+//            gyro = new ADIS16448_IMU();
+            gyro = new ADXRS450_Gyro();
             UpdateGyro();
             LF = new SwerveModule(DriveConstants.LFTurnMotor, DriveConstants.LFDriveMotor, DriveConstants.LFCanID, DriveConstants.LFOff, "LF", this);
             RF = new SwerveModule(DriveConstants.RFTurnMotor, DriveConstants.RFDriveMotor, DriveConstants.RFCanID, DriveConstants.RFOff, "RF", this);
@@ -63,7 +68,7 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
         }
 
         private void UpdateGyro() {
-            lastUpdatedGyroHeading = Rotation2d.fromDegrees(-gyro.getGyroAngleY());
+            lastUpdatedGyroHeading = Rotation2d.fromDegrees(-gyro.getAngle());
         }
 
         public void drive(Translation2d translation, double rotation){
@@ -78,18 +83,21 @@ public class DriveTrainSubsystemRick extends SubsystemBase implements DriveTrain
 
         public void simulationInit()
         {
-            gyroSim = new ADIS16448_IMUSim(gyro);
+//            gyroSim = new ADIS16448_IMUSim(gyro);
+            gyroSim = new ADXRS450_GyroSim(gyro);
             LF.simulateInit();
             RF.simulateInit();
             LB.simulateInit();
             RB.simulateInit();
-            gyroSim.setGyroAngleY(0);
+//          gyroSim.setGyroAngleY(0);
+            gyroSim.setAngle(0);
         }
         @Override
         public void simulationPeriodic(){
             if (gyroSim == null)
                 simulationInit();
-            gyroSim.setGyroAngleY(Units.radiansToDegrees(0.0));
+//            gyroSim.setGyroAngleY(Units.radiansToDegrees(0.0));
+            gyroSim.setAngle(0.0);
             LF.simulatePeriodic();
             RF.simulatePeriodic();
             LB.simulatePeriodic();
