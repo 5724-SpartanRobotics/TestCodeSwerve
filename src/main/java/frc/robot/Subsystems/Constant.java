@@ -41,7 +41,7 @@ public class Constant {
         public static double maxAngularVelocityRps = 10.0;
     }
     public static final class ControllerConstants{
-        public static double joystickDeadband = 0.05;//a deadband that you must overcome for the joystick input, otherwise we send 0
+        public static double joystickDeadband = 0.1;//a deadband that you must overcome for the joystick input, otherwise we send 0
     }
     public static final class DebugSetting{
         public static final DebugLevel TraceLevel = DebugLevel.Verbose;//set this to verbose to get more values to smart dashboard.

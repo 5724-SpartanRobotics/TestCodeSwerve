@@ -214,7 +214,7 @@ public class SwerveModule {
     //Gets the current state of the robot based on the specified gyro angle and the last speed setpoint
     public SwerveModuleState getState(){
         double velocity = Conversions.falconToMPS(drive.getSelectedSensorVelocity());
-        Rotation2d angle = Rotation2d.fromDegrees(Conversions.falconToDegrees(turn.getSelectedSensorPosition()));
+        Rotation2d angle = Rotation2d.fromDegrees(Conversions.falconToDegrees(-turn.getSelectedSensorPosition()));
         return new SwerveModuleState(velocity, angle);
     }
 
@@ -231,7 +231,7 @@ public class SwerveModule {
         if (DebugSetting.TraceLevel == DebugLevel.Verbose){
             SmartDashboard.putNumber(Name + " TurnRef", Units.radiansToDegrees(angle));
         }
-        turn.set(ControlMode.Position, Conversions.radiansToFalcon(angle));
+        turn.set(ControlMode.Position, -Conversions.radiansToFalcon(angle));
         driveAngle = angle;
     }
 

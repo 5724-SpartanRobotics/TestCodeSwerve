@@ -33,8 +33,8 @@ public class TeleopSwerve extends CommandBase {
     @Override
     public void execute(){
         double yAxis = -controller.getY();
-        double xAxis = controller.getX();
-        double zAxis = controller.getZ();
+        double xAxis = -controller.getX();
+        double zAxis = -controller.getZ() / 2;
 
         // if (TimedRobot.isSimulation())
         // {
